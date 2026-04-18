@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>注册表单验证演示</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: #1976d2;
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      /* Alert styles */
+      .alert {
+        padding: 16px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        display: none;
+        align-items: flex-start;
+        gap: 12px;
+        position: relative;
+      }
+
+      .alert.show {
+        display: flex;
+      }
+
+      .alert-success {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .alert-error {
+        background-color: #ffebee;
+        color: #c62828;
+      }
+
+      .alert-icon {
+        font-size: 20px;
+        margin-top: 2px;
+      }
+
+      .alert-content {
+        flex: 1;
+      }
+
+      .alert-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        color: inherit;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .alert-close:hover {
+        opacity: 1;
+      }
+
+      /* Form styles */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-size: 20px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 12px 12px 12px 44px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.2s;
+        background-color: white;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #1976d2;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+      }
+
+      .form-input.error {
+        border-color: #f44336;
+      }
+
+      .form-input.error:focus {
+        box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+      }
+
+      .form-input:disabled {
+        background-color: #f5f5f5;
+        cursor: not-allowed;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #666;
+        font-size: 20px;
+        transition: color 0.2s;
+      }
+
+      .password-toggle:hover {
+        color: #1976d2;
+      }
+
+      .form-hint {
+        font-size: 12px;
+        color: #999;
+        margin-top: 4px;
+      }
+
+      .form-error {
+        font-size: 12px;
+        color: #f44336;
+        margin-top: 4px;
+        display: none;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .form-error.show {
+        display: flex;
+      }
+
+      .form-error-icon {
+        font-size: 14px;
+      }
+
+      /* Button styles */
+      .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+      }
+
+      .button-left,
+      .button-right {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-text {
+        background: none;
+        color: #666;
+      }
+
+      .btn-text:hover:not(:disabled) {
+        background-color: #f5f5f5;
+        color: #333;
+      }
+
+      .btn-outlined {
+        background: none;
+        border: 1px solid #e0e0e0;
+        color: #666;
+      }
+
+      .btn-outlined:hover:not(:disabled) {
+        border-color: #1976d2;
+        color: #1976d2;
+      }
+
+      .btn-primary {
+        background-color: #1976d2;
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background-color: #1565c0;
+      }
+
+      .btn-icon {
+        font-size: 16px;
+      }
+
+      .btn-loading {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .btn.loading .btn-loading {
+        display: inline-block;
+      }
+
+      .btn.loading .btn-text-content {
+        display: none;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Confirm dialog */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .overlay.show {
+        display: flex;
+      }
+
+      .dialog {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+      }
+
+      .dialog-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .dialog-message {
+        color: #666;
+        margin-bottom: 20px;
+      }
+
+      .dialog-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .btn-secondary {
+        background-color: #f5f5f5;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background-color: #e0e0e0;
+      }
+
+      .btn-danger {
+        background-color: #f44336;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: #d32f2f;
+      }
+
+      /* Info section */
+      .info-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .info-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 12px;
+      }
+
+      .info-list {
+        list-style: none;
+        font-size: 13px;
+        color: #666;
+      }
+
+      .info-list li {
+        margin-bottom: 8px;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .info-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #4caf50;
+        font-weight: bold;
+      }
+
+      .test-section {
+        margin-top: 20px;
+        padding: 16px;
+        background-color: #e3f2fd;
+        border-radius: 4px;
+      }
+
+      .test-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1565c0;
+        margin-bottom: 8px;
+      }
+
+      .test-text {
+        font-size: 13px;
+        color: #1976d2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>注册表单演示</h1>
+        <p>验证路径：/auth/register</p>
+      </div>
+
+      <!-- 成功提示 -->
+      <div id="successAlert" class="alert alert-success">
+        <span class="alert-icon mdi mdi-check-circle"></span>
+        <span class="alert-content" id="successMessage"></span>
+        <button
+          class="alert-close mdi mdi-close"
+          onclick="closeAlert('success')"
+        ></button>
+      </div>
+
+      <!-- 错误提示 -->
+      <div id="errorAlert" class="alert alert-error">
+        <span class="alert-icon mdi mdi-alert-circle"></span>
+        <span class="alert-content" id="errorMessage"></span>
+        <button
+          class="alert-close mdi mdi-close"
+          onclick="closeAlert('error')"
+        ></button>
+      </div>
+
+      <!-- 表单 -->
+      <form id="registerForm">
+        <!-- 姓名 -->
+        <div class="form-group">
+          <label class="form-label" for="name">姓名</label>
+          <div class="input-wrapper">
+            <span class="input-icon mdi mdi-account"></span>
+            <input
+              type="text"
+              id="name"
+              class="form-input"
+              placeholder="请输入您的姓名"
+            />
+          </div>
+          <div class="form-error" id="nameError">
+            <span class="form-error-icon mdi mdi-alert-circle"></span>
+            <span class="form-error-text"></span>
+          </div>
+        </div>
+
+        <!-- 邮箱 -->
+        <div class="form-group">
+          <label class="form-label" for="email">邮箱地址</label>
+          <div class="input-wrapper">
+            <span class="input-icon mdi mdi-email"></span>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              placeholder="请输入您的邮箱地址"
+            />
+          </div>
+          <div class="form-error" id="emailError">
+            <span class="form-error-icon mdi mdi-alert-circle"></span>
+            <span class="form-error-text"></span>
+          </div>
+        </div>
+
+        <!-- 密码 -->
+        <div class="form-group">
+          <label class="form-label" for="password">密码</label>
+          <div class="input-wrapper">
+            <span class="input-icon mdi mdi-lock"></span>
+            <input
+              type="password"
+              id="password"
+              class="form-input"
+              placeholder="请输入密码"
+            />
+            <button
+              type="button"
+              class="password-toggle mdi mdi-eye"
+              id="togglePassword"
+            ></button>
+          </div>
+          <div class="form-hint">密码需包含大小写字母和数字，长度8-32位</div>
+          <div class="form-error" id="passwordError">
+            <span class="form-error-icon mdi mdi-alert-circle"></span>
+            <span class="form-error-text"></span>
+          </div>
+        </div>
+
+        <!-- 确认密码 -->
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">确认密码</label>
+          <div class="input-wrapper">
+            <span class="input-icon mdi mdi-lock-check"></span>
+            <input
+              type="password"
+              id="confirmPassword"
+              class="form-input"
+              placeholder="请再次输入密码"
+            />
+            <button
+              type="button"
+              class="password-toggle mdi mdi-eye"
+              id="toggleConfirmPassword"
+            ></button>
+          </div>
+          <div class="form-error" id="confirmPasswordError">
+            <span class="form-error-icon mdi mdi-alert-circle"></span>
+            <span class="form-error-text"></span>
+          </div>
+        </div>
+
+        <!-- 按钮区域 -->
+        <div class="button-group">
+          <div class="button-left">
+            <button type="button" class="btn btn-text" id="backBtn">
+              <span class="btn-icon mdi mdi-arrow-left"></span>
+              <span>返回登录</span>
+            </button>
+            <button type="button" class="btn btn-text" id="cancelBtn">
+              <span class="btn-icon mdi mdi-close"></span>
+              <span>取消</span>
+            </button>
+          </div>
+          <div class="button-right">
+            <button type="button" class="btn btn-outlined" id="resetBtn">
+              <span class="btn-icon mdi mdi-refresh"></span>
+              <span>重置</span>
+            </button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <span class="btn-loading"></span>
+              <span class="btn-icon mdi mdi-check"></span>
+              <span class="btn-text-content">Sign up</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- 验证结果说明 -->
+      <div class="info-section">
+        <h3 class="info-title">
+          验证说明（在 /auth/register 页面中实际验证的效果）
+        </h3>
+        <ul class="info-list">
+          <li>
+            <strong>字段旁边的错误提示</strong
+            >：每个输入框下方都有独立的错误提示区域，验证失败时直接显示
+          </li>
+          <li>
+            <strong>提交中状态</strong
+            >：点击提交后按钮显示加载动画，文字变为"注册中..."，所有输入框和按钮被禁用
+          </li>
+          <li>
+            <strong>成功提示</strong
+            >：提交成功显示绿色提示框"注册成功！您的账号已创建。"
+          </li>
+          <li>
+            <strong>失败提示</strong>：提交失败显示红色提示框，包含具体错误信息
+          </li>
+          <li>
+            <strong>取消逻辑</strong
+            >：有未保存更改时弹出确认框"您有未保存的更改，确定要离开吗？"
+          </li>
+          <li><strong>重置逻辑</strong>：清空所有输入框并隐藏所有错误提示</li>
+          <li>
+            <strong>返回逻辑</strong>：直接跳转到登录页（本演示中显示提示）
+          </li>
+        </ul>
+      </div>
+
+      <!-- 测试提示 -->
+      <div class="test-section">
+        <h3 class="test-title">快速测试指南</h3>
+        <p class="test-text">
+          1. 直接点击"Sign up"测试必填项验证<br />
+          2. 输入"a"测试姓名长度验证<br />
+          3. 输入"invalid"测试邮箱格式验证<br />
+          4. 输入"123456"测试密码复杂度验证<br />
+          5. 输入不同的密码测试确认密码验证<br />
+          6. 输入有效信息测试提交流程（80%成功率，20%模拟失败）
+        </p>
+      </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div class="overlay" id="confirmOverlay">
+      <div class="dialog">
+        <h3 class="dialog-title">确认离开</h3>
+        <p class="dialog-message" id="confirmMessage"></p>
+        <div class="dialog-buttons">
+          <button type="button" class="btn btn-secondary" id="confirmNo">
+            取消
+          </button>
+          <button type="button" class="btn btn-danger" id="confirmYes">
+            确定离开
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 表单状态
+      let isSubmitting = false;
+      let formData = {
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      };
+      let initialFormData = { ...formData };
+
+      // DOM元素
+      const form = document.getElementById("registerForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const backBtn = document.getElementById("backBtn");
+      const successAlert = document.getElementById("successAlert");
+      const errorAlert = document.getElementById("errorAlert");
+      const successMessage = document.getElementById("successMessage");
+      const errorMessage = document.getElementById("errorMessage");
+      const confirmOverlay = document.getElementById("confirmOverlay");
+      const confirmMessage = document.getElementById("confirmMessage");
+      const confirmYes = document.getElementById("confirmYes");
+      const confirmNo = document.getElementById("confirmNo");
+
+      // 输入框和错误提示
+      const inputs = {
+        name: document.getElementById("name"),
+        email: document.getElementById("email"),
+        password: document.getElementById("password"),
+        confirmPassword: document.getElementById("confirmPassword"),
+      };
+
+      const errors = {
+        name: document.getElementById("nameError"),
+        email: document.getElementById("emailError"),
+        password: document.getElementById("passwordError"),
+        confirmPassword: document.getElementById("confirmPasswordError"),
+      };
+
+      // 密码切换按钮
+      const togglePassword = document.getElementById("togglePassword");
+      const toggleConfirmPassword = document.getElementById(
+        "toggleConfirmPassword",
+      );
+
+      // 验证规则
+      const rules = {
+        name: [
+          { validate: (v) => v.trim() !== "", message: "姓名不能为空" },
+          { validate: (v) => v.length >= 2, message: "姓名至少2个字符" },
+          { validate: (v) => v.length <= 20, message: "姓名不能超过20个字符" },
+        ],
+        email: [
+          { validate: (v) => v.trim() !== "", message: "邮箱不能为空" },
+          {
+            validate: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+            message: "请输入有效的邮箱地址",
+          },
+        ],
+        password: [
+          { validate: (v) => v !== "", message: "密码不能为空" },
+          { validate: (v) => v.length >= 8, message: "密码至少8个字符" },
+          { validate: (v) => v.length <= 32, message: "密码不能超过32个字符" },
+          {
+            validate: (v) => /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(v),
+            message: "密码必须包含大小写字母和数字",
+          },
+        ],
+        confirmPassword: [
+          { validate: (v) => v !== "", message: "请确认密码" },
+          {
+            validate: (v) => v === formData.password,
+            message: "两次输入的密码不一致",
+          },
+        ],
+      };
+
+      // 验证单个字段
+      function validateField(fieldName) {
+        const value = inputs[fieldName].value;
+        formData[fieldName] = value;
+
+        for (const rule of rules[fieldName]) {
+          if (!rule.validate(value)) {
+            showError(fieldName, rule.message);
+            return false;
+          }
+        }
+
+        hideError(fieldName);
+        return true;
+      }
+
+      // 验证所有字段
+      function validateAllFields() {
+        let isValid = true;
+        for (const fieldName in rules) {
+          if (!validateField(fieldName)) {
+            isValid = false;
+          }
+        }
+        return isValid;
+      }
+
+      // 显示错误
+      function showError(fieldName, message) {
+        inputs[fieldName].classList.add("error");
+        errors[fieldName].querySelector(".form-error-text").textContent =
+          message;
+        errors[fieldName].classList.add("show");
+      }
+
+      // 隐藏错误
+      function hideError(fieldName) {
+        inputs[fieldName].classList.remove("error");
+        errors[fieldName].classList.remove("show");
+      }
+
+      // 隐藏所有错误
+      function hideAllErrors() {
+        for (const fieldName in errors) {
+          hideError(fieldName);
+        }
+      }
+
+      // 显示提示
+      function showAlert(type, message) {
+        if (type === "success") {
+          successMessage.textContent = message;
+          successAlert.classList.add("show");
+          errorAlert.classList.remove("show");
+        } else {
+          errorMessage.textContent = message;
+          errorAlert.classList.add("show");
+          successAlert.classList.remove("show");
+        }
+      }
+
+      // 关闭提示
+      function closeAlert(type) {
+        if (type === "success") {
+          successAlert.classList.remove("show");
+        } else {
+          errorAlert.classList.remove("show");
+        }
+      }
+
+      // 设置提交状态
+      function setSubmittingState(submitting) {
+        isSubmitting = submitting;
+
+        // 更新按钮状态
+        submitBtn.disabled = submitting;
+        resetBtn.disabled = submitting;
+        cancelBtn.disabled = submitting;
+        backBtn.disabled = submitting;
+
+        // 更新输入框状态
+        for (const fieldName in inputs) {
+          inputs[fieldName].disabled = submitting;
+        }
+
+        // 更新按钮显示
+        if (submitting) {
+          submitBtn.classList.add("loading");
+          submitBtn.querySelector(".btn-text-content").textContent =
+            "注册中...";
+        } else {
+          submitBtn.classList.remove("loading");
+          submitBtn.querySelector(".btn-text-content").textContent = "Sign up";
+        }
+      }
+
+      // 检查表单是否有改动
+      function hasFormChanges() {
+        return Object.keys(initialFormData).some(
+          (key) => formData[key] !== initialFormData[key],
+        );
+      }
+
+      // 重置表单
+      function resetForm() {
+        for (const fieldName in inputs) {
+          inputs[fieldName].value = "";
+          formData[fieldName] = "";
+        }
+        hideAllErrors();
+        closeAlert("success");
+        closeAlert("error");
+      }
+
+      // 模拟API调用
+      function simulateApiCall() {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (Math.random() > 0.2) {
+              resolve();
+            } else {
+              reject(new Error("服务器暂时不可用，请稍后重试"));
+            }
+          }, 2000);
+        });
+      }
+
+      // 显示确认对话框
+      let confirmCallback = null;
+      function showConfirm(message, callback) {
+        confirmMessage.textContent = message;
+        confirmOverlay.classList.add("show");
+        confirmCallback = callback;
+      }
+
+      function hideConfirm() {
+        confirmOverlay.classList.remove("show");
+        confirmCallback = null;
+      }
+
+      // 事件监听
+
+      // 实时验证
+      for (const fieldName in inputs) {
+        inputs[fieldName].addEventListener("blur", () => {
+          if (inputs[fieldName].value !== "" || formData[fieldName] !== "") {
+            validateField(fieldName);
+          }
+        });
+
+        inputs[fieldName].addEventListener("input", () => {
+          formData[fieldName] = inputs[fieldName].value;
+          // 输入时清除错误状态
+          if (inputs[fieldName].classList.contains("error")) {
+            hideError(fieldName);
+          }
+        });
+      }
+
+      // 密码可见性切换
+      togglePassword.addEventListener("click", () => {
+        const type = inputs.password.type === "password" ? "text" : "password";
+        inputs.password.type = type;
+        togglePassword.classList.toggle("mdi-eye");
+        togglePassword.classList.toggle("mdi-eye-off");
+      });
+
+      toggleConfirmPassword.addEventListener("click", () => {
+        const type =
+          inputs.confirmPassword.type === "password" ? "text" : "password";
+        inputs.confirmPassword.type = type;
+        toggleConfirmPassword.classList.toggle("mdi-eye");
+        toggleConfirmPassword.classList.toggle("mdi-eye-off");
+      });
+
+      // 表单提交
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // 清除之前的提示
+        closeAlert("success");
+        closeAlert("error");
+
+        // 验证表单
+        const isValid = validateAllFields();
+
+        if (!isValid) {
+          showAlert("error", "请检查表单中的错误信息");
+          return;
+        }
+
+        // 开始提交
+        setSubmittingState(true);
+
+        try {
+          await simulateApiCall();
+          showAlert("success", "注册成功！您的账号已创建。");
+        } catch (error) {
+          showAlert("error", error.message || "注册失败，请稍后重试");
+        } finally {
+          setSubmittingState(false);
+        }
+      });
+
+      // 重置按钮
+      resetBtn.addEventListener("click", resetForm);
+
+      // 取消按钮
+      cancelBtn.addEventListener("click", () => {
+        if (hasFormChanges()) {
+          showConfirm("您有未保存的更改，确定要离开吗？", () => {
+            resetForm();
+            // 在实际项目中会跳转到登录页
+            showAlert("success", "已取消，返回登录页（演示中）");
+          });
+        } else {
+          // 没有改动，直接返回
+          showAlert("success", "返回登录页（演示中）");
+        }
+      });
+
+      // 返回按钮
+      backBtn.addEventListener("click", () => {
+        showAlert("success", "返回登录页（演示中）");
+      });
+
+      // 确认对话框按钮
+      confirmYes.addEventListener("click", () => {
+        if (confirmCallback) {
+          confirmCallback();
+        }
+        hideConfirm();
+      });
+
+      confirmNo.addEventListener("click", hideConfirm);
+
+      // 点击遮罩层关闭对话框
+      confirmOverlay.addEventListener("click", (e) => {
+        if (e.target === confirmOverlay) {
+          hideConfirm();
+        }
+      });
+    </script>
+  </body>
+</html>
